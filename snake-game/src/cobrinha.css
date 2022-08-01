@@ -1,0 +1,19 @@
+#board{
+    width: 50em;
+    height: 35em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: auto;
+    border: 0.2em solid gray;
+}
+.pixelWhite{
+    width: 1em;
+    height: 1em;
+    background-color: rgb(241, 241, 241);
+}
+.pixelBlack{
+    width: 1em;
+    height: 1em;
+    background-color: black;
+}
