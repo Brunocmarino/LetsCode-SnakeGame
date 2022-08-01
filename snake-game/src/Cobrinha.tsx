@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 export interface ponto{
     ant: ponto,
     l:number,
@@ -9,7 +11,19 @@ export const Cobra = () => {
     let head : ponto
     let tail : ponto
     let size : number
-    const andarCobra = (cobra : ponto[], direction : string, quadro:ponto[][]) => {
+    let [quadro, setQuadro] = useState([[]])
+
+    const geraQuadro = (size:number) => {
+        let quadro: = [[]]
+        for(let i=0;i<size;i++){
+            quadro.push([])
+            for(let j=0;j<size;j++){
+                quadro[i].push(0) 
+            }
+        }
+    }
+
+    const andarCobra = (cobra : ponto[], quadro:ponto[][], direction ?: string) => {
         //Ainda tem que verificar se sai do quadro ou não
         const lastL = quadro.length-1
         const lastC = quadro[0].length-1
@@ -19,6 +33,12 @@ export const Cobra = () => {
             ant: head,
             l: 0,
             c: 0,
+        }
+        if(!direction){
+            if(head.ant.l > head.l)   direction = 'up';
+            if(head.ant.l < head.l)   direction = 'down';
+            if(head.ant.c > head.c)   direction = 'left';
+            if(head.ant.c < head.c)   direction = 'rignt';
         }
         switch (direction){
             case 'up':
@@ -90,7 +110,11 @@ export const Cobra = () => {
         cobra.splice(cobra.length-1)
         return cobra
     }
-
+    useEffect
+    return(
+        <>
+        </>
+    )
 }
 //   -------|
 //          |
