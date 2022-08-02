@@ -13,11 +13,29 @@ export interface Pixel{
 export const Cobra = () => {
     const [cobra, setCobra] = useState<Array<Ponto>>()
     const [quadro, setQuadro] = useState<Array<Array<Pixel>>>()
+    const [recarrega,setRecarrega] = useState(true)
     const criaCobra = () => {
-        let ponto: Ponto = {
+        let ponto1: Ponto = {
             l:3,
             c:3
         }
+        let ponto2: Ponto = {
+            l:3,
+            c:4
+        }
+        let ponto3: Ponto = {
+            l:3,
+            c:5
+        }
+        let ponto4: Ponto = {
+            l:3,
+            c:6
+        }
+        let ponto5: Ponto = {
+            l:3,
+            c:7
+        }
+        setCobra([ponto1,ponto2,ponto3,ponto4,ponto5])
     }
 
     const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
@@ -133,18 +151,7 @@ export const Cobra = () => {
         geraComida(quadroAux)
         setQuadro(quadroAux)
     }
-
     
-
-    useEffect(()=>{
-        atualizaQuadro()
-    },[])
-
-    useEffect(()=>{
-        atualizaQuadro()
-    },[cobra])
-
-
     const apertaTecla = (event) => {
         event.preventDefault()
         if(event.key == '13'){
@@ -166,6 +173,23 @@ export const Cobra = () => {
             console.log('down')
         }
     }  
+    
+
+    useEffect(()=>{
+        criaCobra()
+        atualizaQuadro()
+    },[])
+
+    useEffect(()=>{
+        if(quadro&&cobra) andarCobra(cobra,quadro,'down')
+        atualizaQuadro()
+        setTimeout(()=>{
+            setRecarrega(true)
+            console.log("regarregou")
+        },1000)
+    },[recarrega])
+
+
 
     return (
         <>
