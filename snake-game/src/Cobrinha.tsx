@@ -2,18 +2,19 @@ import { useEffect, useState } from "react"
 import "./cobrinha.css"
 
 export interface Ponto{
-    l:number,
-    c:number,
+    l: number,
+    c: number,
 }
 
 export interface Pixel{
- state:boolean
+ state: boolean
 }
+
 export const Cobra = () => {
     const [cobra, setCobra] = useState<Array<Ponto>>()
     const [quadro, setQuadro] = useState<Array<Array<Pixel>>>()
     const criaCobra = () => {
-        let ponto :Ponto = {
+        let ponto: Ponto = {
             l:3,
             c:3
         }
@@ -116,6 +117,8 @@ export const Cobra = () => {
         setQuadro(quadroAux)
     }
 
+    
+
     useEffect(()=>{
         atualizaQuadro()
     },[])
@@ -124,9 +127,32 @@ export const Cobra = () => {
         atualizaQuadro()
     },[cobra])
 
+
+    const apertaTecla = (event) => {
+        event.preventDefault()
+        if(event.key == '13'){
+            console.log('enter')
+        }
+        else if(event.key == 'a'){
+            console.log('left')
+        }
+        
+        else if(event.key == 'w'){
+            console.log('up')
+        }
+        
+        else if(event.key == 'd'){
+            console.log('right')
+        }    
+        
+        else if(event.key == 's'){
+            console.log('down')
+        }
+    }  
+
     return (
         <>
-      <div id="board">
+      <div id="board" onKeyPress={(e) => apertaTecla(e)}>
         
         {quadro && (
          quadro.map((array) =>(
@@ -138,6 +164,7 @@ export const Cobra = () => {
          )
         ))}
       </div>
+      <input id='input' type="text" onKeyPress={(e) => apertaTecla(e)}/>
       </>
      )
 }
