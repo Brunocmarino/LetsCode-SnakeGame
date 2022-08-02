@@ -7,39 +7,45 @@ export interface Ponto{
 }
 
 export interface Pixel{
- state: string
+ state: 'fruta' | 'branco' | 'head' | 'cobra'
 }
 
+export type Direction = 'right' | 'down' | 'up' | 'left'
+
 export const Cobra = () => {
-    const [cobra, setCobra] = useState<Array<Ponto>>()
-    const [quadro, setQuadro] = useState<Array<Array<Pixel>>>()
-    const [recarrega,setRecarrega] = useState(true)
-    const criaCobra = () => {
-        let ponto1: Ponto = {
+
+    const cobraInicio = [
+        {
             l:3,
             c:3
-        }
-        let ponto2: Ponto = {
+        },
+        {
             l:3,
             c:4
-        }
-        let ponto3: Ponto = {
+        },
+        {
             l:3,
             c:5
-        }
-        let ponto4: Ponto = {
+        },
+        {
             l:3,
             c:6
-        }
-        let ponto5: Ponto = {
+        },
+        {
             l:3,
             c:7
-        }
-        setCobra([ponto1,ponto2,ponto3,ponto4,ponto5])
-    }
+        }    
+    ]
+
+    const matrix = Array(35).fill(Array(50).fill({state: 'branco'}));
+
+    const [cobra, setCobra] = useState<Array<Ponto>>(cobraInicio)
+    const [quadro, setQuadro] = useState<Array<Array<Pixel>>>(matrix)
+    const [recarrega,setRecarrega] = useState(true)
+    const [direction, setDirection] = useState<Direction>('right')
+    const [comida, setComida] = useState<Ponto>({l: 25, c: 25})
 
     const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
-        //Ainda tem que verificar se sai do quadro ou não
         const lastL = quadro.length-1
         const lastC = quadro[0].length-1
         const head = cobra[0]
@@ -99,7 +105,6 @@ export const Cobra = () => {
                     break;
             case 'right':
                 if(head.c>=lastC){
-                    console.log("aaa")
                     ponto = {
                         l: head.l,
                         c: 0,
@@ -114,10 +119,11 @@ export const Cobra = () => {
                     break;
         }
         let newCobra = JSON.parse(JSON.stringify(cobra))
-        console.log(cobra)
         newCobra.unshift(ponto)
-        newCobra.pop()
-        console.log(newCobra)
+
+        if(ponto.l != comida.l || ponto.c != comida.c) 
+            newCobra.pop()
+        else{geraComida()}
         setCobra(newCobra)
         return newCobra
     }
@@ -128,14 +134,11 @@ export const Cobra = () => {
         let newQuadro : Pixel [][]
         let estaNaCobra : Ponto|undefined = undefined
         do{
-            linha = Math.round(Math.random()*(35))
-            coluna = Math.round(Math.random()*(50))
-            newQuadro = JSON.parse(JSON.stringify(quadro))
+            linha = Math.round(Math.random()*(34))
+            coluna = Math.round(Math.random()*(49))
             estaNaCobra = cobra?.find((c)=>(c.l===linha && c.c===coluna))
         }while(estaNaCobra)
-        newQuadro[linha][coluna] = {state:'fruta'}
-        quadro = newQuadro
-        return newQuadro
+        setComida({l: linha, c: coluna})
     }
 
     const atualizaQuadro = () =>{
@@ -150,52 +153,50 @@ export const Cobra = () => {
           }
           quadroAux.push(array)     
         }
+        // let quadroAux = JSON.parse(JSON.stringify(quadro))s
+        quadroAux[comida.l][comida.c].state = 'fruta'
         cobra?.forEach((p,idx) => {
             if(idx===0)
                 quadroAux[p.l][p.c].state = 'head'
             else
                 quadroAux[p.l][p.c].state = 'cobra'
         });
-        geraComida(quadroAux)
+
         setQuadro(quadroAux)
     }
     
     const apertaTecla = (event) => {
         event.preventDefault()
-        if(event.key == '13'){
-            console.log('enter')
-        }
-        else if(event.key == 'a'){
-            console.log('left')
+        if(event.key == 'a'){
+            setDirection('left')
         }
         
         else if(event.key == 'w'){
-            console.log('up')
+            setDirection('up')
         }
         
         else if(event.key == 'd'){
-            console.log('right')
+            setDirection('right')
         }    
         
         else if(event.key == 's'){
-            console.log('down')
+            setDirection('down')
         }
     }  
     
 
     useEffect(()=>{
-        criaCobra()
         atualizaQuadro()
+        geraComida(quadro)
     },[])
 
     useEffect(()=>{
         setTimeout(()=>{
             if(quadro&&cobra){
-                andarCobra(cobra,quadro,'right')
+                andarCobra(cobra,quadro,direction)
             }
             atualizaQuadro()
             setRecarrega(!recarrega)
-            console.log("regarregou")
         },50)
     },[recarrega])
 
@@ -212,7 +213,7 @@ export const Cobra = () => {
                 ? <div className="pixelWhite" key={id}></div>
                 : pixel.state==='cobra'
                     ? <div className="pixelBlack" key={id}></div>
-                        :pixel.state==='head'
+                        :pixel.state==='head' 
                             ?<div className="pixelRed" key={id}></div>
                             :<div className="pixelRed" key={id}></div>
             ))
