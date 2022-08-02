@@ -7,7 +7,7 @@ export interface Ponto{
 }
 
 export interface Pixel{
- state:boolean
+ state: string
 }
 export const Cobra = () => {
     const [cobra, setCobra] = useState<Array<Ponto>>()
@@ -19,7 +19,7 @@ export const Cobra = () => {
         }
     }
 
-    const andarCobra = (cobra : Ponto[], quadro:Ponto[][], direction ?: string) => {
+    const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
         //Ainda tem que verificar se sai do quadro ou não
         const lastL = quadro.length-1
         const lastC = quadro[0].length-1
@@ -98,21 +98,38 @@ export const Cobra = () => {
         return cobra
     }
 
+    const geraComida = (quadro:Pixel[][]) => {
+        let linha : number
+        let coluna : number
+        let newQuadro : Pixel [][]
+        let estaNaCobra : Ponto|undefined = undefined
+        do{
+            linha = Math.round(Math.random()*(35))
+            coluna = Math.round(Math.random()*(50))
+            newQuadro = JSON.parse(JSON.stringify(quadro))
+            estaNaCobra = cobra?.find((c)=>(c.l===linha && c.c===coluna))
+        }while(estaNaCobra)
+        newQuadro[linha][coluna] = {state:'fruta'}
+        quadro = newQuadro
+        return newQuadro
+    }
+
     const atualizaQuadro = () =>{
         let quadroAux: Pixel[][] = []
         for(let i=0;i<35;i++){
           let array :Pixel[] = []
           for(let j=0;j<50;j++){
             let item :Pixel = {
-              state:false
+              state: 'branco'
              }
             array.push(item)
           }
           quadroAux.push(array)     
         }
         cobra?.forEach(p => {
-            quadroAux[p.l][p.c].state = true
+            quadroAux[p.l][p.c].state = 'cobra'
         });
+        geraComida(quadroAux)
         setQuadro(quadroAux)
     }
 
@@ -131,9 +148,11 @@ export const Cobra = () => {
         {quadro && (
          quadro.map((array) =>(
             array.map((pixel, id)=>(
-                pixel.state===false 
+                pixel.state==='branco' 
                 ? <div className="pixelWhite" key={id}></div>
-                : <div className="pixelBlack" key={id}></div>
+                : pixel.state==='cobra'
+                    ?<div className="pixelBlack" key={id}></div>
+                    :<div className="pixelRed" key={id}></div>
             ))
          )
         ))}

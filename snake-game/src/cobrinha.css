@@ -17,3 +17,8 @@
     height: 1em;
     background-color: black;
 }
+.pixelRed{
+    width: 1em;
+    height: 1em;
+    background-color: rgb(255, 117, 117);
+}
