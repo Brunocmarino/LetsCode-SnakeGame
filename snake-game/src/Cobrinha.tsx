@@ -98,7 +98,8 @@ export const Cobra = () => {
                 }
                     break;
             case 'right':
-                if(head.l>=lastC){
+                if(head.c>=lastC){
+                    console.log("aaa")
                     ponto = {
                         l: head.l,
                         c: 0,
@@ -106,15 +107,19 @@ export const Cobra = () => {
                 }
                 else{
                     ponto = {
-                        l: head.l + 1,
-                        c: head.c,
+                        l: head.l,
+                        c: head.c+1,
                     }
                 }
                     break;
         }
-        cobra.push(ponto)
-        cobra.splice(cobra.length-1)
-        return cobra
+        let newCobra = JSON.parse(JSON.stringify(cobra))
+        console.log(cobra)
+        newCobra.unshift(ponto)
+        newCobra.pop()
+        console.log(newCobra)
+        setCobra(newCobra)
+        return newCobra
     }
 
     const geraComida = (quadro:Pixel[][]) => {
@@ -134,7 +139,7 @@ export const Cobra = () => {
     }
 
     const atualizaQuadro = () =>{
-        let quadroAux: Pixel[][] = []
+        let quadroAux: Pixel[][] = []                  
         for(let i=0;i<35;i++){
           let array :Pixel[] = []
           for(let j=0;j<50;j++){
@@ -145,8 +150,11 @@ export const Cobra = () => {
           }
           quadroAux.push(array)     
         }
-        cobra?.forEach(p => {
-            quadroAux[p.l][p.c].state = 'cobra'
+        cobra?.forEach((p,idx) => {
+            if(idx===0)
+                quadroAux[p.l][p.c].state = 'head'
+            else
+                quadroAux[p.l][p.c].state = 'cobra'
         });
         geraComida(quadroAux)
         setQuadro(quadroAux)
@@ -181,12 +189,14 @@ export const Cobra = () => {
     },[])
 
     useEffect(()=>{
-        if(quadro&&cobra) andarCobra(cobra,quadro,'down')
-        atualizaQuadro()
         setTimeout(()=>{
-            setRecarrega(true)
+            if(quadro&&cobra){
+                andarCobra(cobra,quadro,'right')
+            }
+            atualizaQuadro()
+            setRecarrega(!recarrega)
             console.log("regarregou")
-        },1000)
+        },50)
     },[recarrega])
 
 
@@ -201,8 +211,10 @@ export const Cobra = () => {
                 pixel.state==='branco' 
                 ? <div className="pixelWhite" key={id}></div>
                 : pixel.state==='cobra'
-                    ?<div className="pixelBlack" key={id}></div>
-                    :<div className="pixelRed" key={id}></div>
+                    ? <div className="pixelBlack" key={id}></div>
+                        :pixel.state==='head'
+                            ?<div className="pixelRed" key={id}></div>
+                            :<div className="pixelRed" key={id}></div>
             ))
          )
         ))}
