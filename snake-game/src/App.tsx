@@ -6,7 +6,7 @@ function App() {
 
   return (
     <div className="App">
-        <h3>Olá</h3>
+        <h3>Jogo da Cobrinha - Bruno Couto e Gabriela Vaz</h3>
         <Cobra/>
     </div>
   )

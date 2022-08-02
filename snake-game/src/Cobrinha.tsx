@@ -10,6 +10,8 @@ export interface Pixel{
  state: 'fruta' | 'branco' | 'head' | 'cobra'
 }
 
+export type Score = number
+    
 export type Direction = 'right' | 'down' | 'up' | 'left'
 
 export const Cobra = () => {
@@ -37,13 +39,14 @@ export const Cobra = () => {
         }    
     ]
 
-    const matrix = Array(35).fill(Array(50).fill({state: 'branco'}));
+    const quadroInicio = Array(35).fill(Array(50).fill({state: 'branco'}));
 
     const [cobra, setCobra] = useState<Array<Ponto>>(cobraInicio)
-    const [quadro, setQuadro] = useState<Array<Array<Pixel>>>(matrix)
+    const [quadro, setQuadro] = useState<Array<Array<Pixel>>>(quadroInicio)
     const [recarrega,setRecarrega] = useState(true)
     const [direction, setDirection] = useState<Direction>('right')
     const [comida, setComida] = useState<Ponto>({l: 25, c: 25})
+    const [score, setScore] = useState<Score>(0)
 
     const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
         const lastL = quadro.length-1
@@ -123,7 +126,11 @@ export const Cobra = () => {
 
         if(ponto.l != comida.l || ponto.c != comida.c) 
             newCobra.pop()
-        else{geraComida()}
+        else{
+            geraComida(quadro)
+            setScore(score + 1)
+        }
+
         setCobra(newCobra)
         return newCobra
     }
@@ -167,19 +174,19 @@ export const Cobra = () => {
     
     const apertaTecla = (event) => {
         event.preventDefault()
-        if(event.key == 'a'){
+        if(event.key == 'a' && direction != 'right'){
             setDirection('left')
         }
         
-        else if(event.key == 'w'){
+        else if(event.key == 'w' && direction != 'down'){
             setDirection('up')
         }
         
-        else if(event.key == 'd'){
+        else if(event.key == 'd' && direction != 'left'){
             setDirection('right')
         }    
         
-        else if(event.key == 's'){
+        else if(event.key == 's' && direction != 'up'){
             setDirection('down')
         }
     }  
@@ -219,6 +226,9 @@ export const Cobra = () => {
             ))
          )
         ))}
+
+            <h2>Placar: {score}</h2>
+        
       </div>
       <input id='input' type="text" onKeyPress={(e) => apertaTecla(e)}/>
       </>
