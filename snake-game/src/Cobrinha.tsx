@@ -44,15 +44,25 @@ export const Cobra = () => {
     const [cobra, setCobra] = useState<Array<Ponto>>(cobraInicio)
     const [quadro, setQuadro] = useState<Array<Array<Pixel>>>(quadroInicio)
     const [recarrega,setRecarrega] = useState(true)
-    const [direction, setDirection] = useState<Direction>('right')
+    const [direction, setDirection] = useState<Direction>('left')
     const [comida, setComida] = useState<Ponto>({l: 25, c: 25})
     const [score, setScore] = useState<Score>(0)
+    const [velocidade,setVelocidade] = useState(70)
+    const [fim,setFim] = useState(false)
+
+    const fimJogo = (cobra : Ponto[], head: Ponto) => {
+        console.log(cobra[0])
+        console.log(head)
+        console.log(cobra.find((p)=>(head.c===p.c && head.l===p.l)))
+        return (cobra.find((p)=>(head.c===p.c && head.l===p.l)))
+    }
 
     const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
         const lastL = quadro.length-1
         const lastC = quadro[0].length-1
         const head = cobra[0]
         const tail = cobra[cobra.length-1]
+        if(fim) return
         let ponto : Ponto = {
             l: 0,
             c: 0,
@@ -121,18 +131,34 @@ export const Cobra = () => {
                 }
                     break;
         }
-        let newCobra = JSON.parse(JSON.stringify(cobra))
-        newCobra.unshift(ponto)
-
-        if(ponto.l != comida.l || ponto.c != comida.c) 
-            newCobra.pop()
-        else{
-            geraComida(quadro)
-            setScore(score + 1)
+        
+        if(fimJogo(cobra,ponto)){
+            setFim(true)
+            setCobra(cobraInicio)
+            setQuadro(quadroInicio)
+            setScore(0)
+            // setComida()
+            return;
         }
+        else{
+            let newCobra = JSON.parse(JSON.stringify(cobra))
+            //Adiciona o novo ponto ao início da cobra
+            newCobra.unshift(ponto)
+            const comeuComida = ponto.l === comida.l && ponto.c === comida.c
+            if(!comeuComida) 
+                //Anda o final da cobra
+                newCobra.pop()
+            else{
+                geraComida(quadro)
+                setScore(score + 1)
+                setVelocidade(velocidade-5)
+            }
+    
+            setCobra(newCobra)
+            return newCobra
 
-        setCobra(newCobra)
-        return newCobra
+        }
+        
     }
 
     const geraComida = (quadro:Pixel[][]) => {
@@ -211,7 +237,15 @@ export const Cobra = () => {
 
     return (
         <>
-      <div id="board" onKeyPress={(e) => apertaTecla(e)}>
+        <h2>Placar: {score}</h2>
+        <input id='input' type="text" onKeyPress={(e) => apertaTecla(e)}/>
+        {fim && 
+            <>
+            <h2>Fim de Jogo</h2>
+            <button onClick={()=>setFim(false)}>Restart</button>
+            </>
+            }
+        <div id="board" onKeyPress={(e) => apertaTecla(e)}>
         
         {quadro && (
          quadro.map((array) =>(
@@ -227,10 +261,8 @@ export const Cobra = () => {
          )
         ))}
 
-            <h2>Placar: {score}</h2>
         
       </div>
-      <input id='input' type="text" onKeyPress={(e) => apertaTecla(e)}/>
       </>
      )
 }
