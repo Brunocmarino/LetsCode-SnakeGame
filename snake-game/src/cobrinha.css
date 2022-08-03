@@ -1,6 +1,6 @@
 #board{
-    width: 50em;
-    height: 35em;
+    width: 25em;
+    height: 20em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

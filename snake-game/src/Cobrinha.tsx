@@ -39,13 +39,15 @@ export const Cobra = () => {
         }    
     ]
 
-    const quadroInicio = Array(35).fill(Array(50).fill({state: 'branco'}));
+    const tamanhoQuadro = {l: 20, c: 25}
+
+    const quadroInicio = Array(tamanhoQuadro.l).fill(Array(tamanhoQuadro.c).fill({state: 'branco'}));
 
     const [cobra, setCobra] = useState<Array<Ponto>>(cobraInicio)
     const [quadro, setQuadro] = useState<Array<Array<Pixel>>>(quadroInicio)
     const [recarrega,setRecarrega] = useState(true)
     const [direction, setDirection] = useState<Direction>('right')
-    const [comida, setComida] = useState<Ponto>({l: 25, c: 25})
+    const [comida, setComida] = useState<Ponto>({l: 10, c: 10})
     const [score, setScore] = useState<Score>(0)
 
     const andarCobra = (cobra : Ponto[], quadro:Pixel[][], direction ?: string) => {
@@ -141,8 +143,8 @@ export const Cobra = () => {
         let newQuadro : Pixel [][]
         let estaNaCobra : Ponto|undefined = undefined
         do{
-            linha = Math.round(Math.random()*(34))
-            coluna = Math.round(Math.random()*(49))
+            linha = Math.round(Math.random()*(tamanhoQuadro.l - 1))
+            coluna = Math.round(Math.random()*(tamanhoQuadro.c - 1))
             estaNaCobra = cobra?.find((c)=>(c.l===linha && c.c===coluna))
         }while(estaNaCobra)
         setComida({l: linha, c: coluna})
@@ -150,9 +152,9 @@ export const Cobra = () => {
 
     const atualizaQuadro = () =>{
         let quadroAux: Pixel[][] = []                  
-        for(let i=0;i<35;i++){
+        for(let i=0;i<tamanhoQuadro.l;i++){
           let array :Pixel[] = []
-          for(let j=0;j<50;j++){
+          for(let j=0;j<tamanhoQuadro.c;j++){
             let item :Pixel = {
               state: 'branco'
              }
